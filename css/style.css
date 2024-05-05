@@ -58,14 +58,10 @@ body {
 
 .countTime,
 .flag,
+.reset,
 .highestScore {
   font-size: 1.2em;
   color: white;
-}
-
-.reset {
-  color: white;
-  padding-top: 1%;
 }
 
 .reset,
