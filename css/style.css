@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(to right, #989898, #2f412588);
+  background: gray;
   user-select: none;
 }
 
@@ -15,11 +15,13 @@ body {
   border-radius: 5px;
   cursor: pointer;
 }
+
 .easy {
   display: grid;
   grid-template-columns: repeat(11, 30px);
   grid-template-rows: repeat(11, 30px);
 }
+
 .normal {
   display: grid;
   grid-template-columns: repeat(15, 30px);
@@ -54,25 +56,52 @@ body {
   align-items: center;
 }
 
-.countTime, .flag {
-  font-size: 1.2em;
+.countTime,
+.flag,
+.reset,
+.highestScore {
+  font-size: 1.5em;
   color: white;
 }
 
-.reset {
-  font-size: 1.5em;
-  color: white;
+.reset,
+.highestScore {
   cursor: pointer;
 }
 
 @keyframes subtle-shake {
-  0% { transform: translate(-2px, -2px); }
-  25% { transform: translate(2px, 2px); }
-  50% { transform: translate(-2px, 0); }
-  75% { transform: translate(0, -2px); }
-  100% { transform: translate(0, 0); }
+  0% {
+    transform: translate(-2px, -2px);
+  }
+
+  25% {
+    transform: translate(2px, 2px);
+  }
+
+  50% {
+    transform: translate(-2px, 0);
+  }
+
+  75% {
+    transform: translate(0, -2px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 .shake-animation {
   animation: subtle-shake 0.5s ease-in-out;
+}
+
+.highestScore,
+.reset {
+  transition: transform 0.2s ease, margin-top 0.2s ease;
+}
+
+.highestScore:hover,
+.reset:hover {
+  transform: scale(1.1);
+  margin-top: -5px;
 }

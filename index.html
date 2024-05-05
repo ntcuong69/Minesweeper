@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
-<title>Minesweeper</title>
-<script src="./js/sweetalert2@11.js"></script>
-<link rel="stylesheet" href="./css/animate.min.css">
-<link rel="stylesheet" href="./css/style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, height=device-height"
+    />
+    <title>Minesweeper</title>
+    <script src="./js/sweetalert2@11.js"></script>
+    <link rel="stylesheet" href="./css/animate.min.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
     <div class="main">
-        <div class="menu">
-            <select id="difficulty">
-                <option value="easy">Easy</option>
-                <option value="normal">Normal</option>
-                <option value="hard">Hard</option>
-            </select>
-            <span class="flag">🚩
-                <span id="flag-count"></span>
-            </span>
-            <span class="countTime">⏱️
-                <span class="timer">0</span>
-            </span>
-            <span class="reset" onclick="resetBoard()">⟲</span>
-        </div>
-        <div id="board" class="easy"></div>
+      <div class="menu">
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="normal">Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+        <span class="highestScore" onclick="highestScoreBox()">🏆</span>
+        <span class="flag"
+          >🚩
+          <span id="flag-count"></span>
+        </span>
+        <span class="countTime"
+          >⏱️
+          <span class="timer">0</span>
+        </span>
+        <span class="reset" onclick="resetBoard()">⟲</span>
+      </div>
+      <div id="board" class="easy"></div>
     </div>
     <script src="./js/script.js"></script>
-</body>
+  </body>
 </html>
