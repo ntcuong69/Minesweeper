@@ -1,7 +1,8 @@
 // Thiết lập bộ đếm thời gian
 let timerInterval;
 let seconds = 0;
-
+let flagsPlaced = 18; // Biến để theo dõi số cờ đã đặt
+updateFlagCount();
 function startTimer() {
   timerInterval = setInterval(function () {
     seconds++;
@@ -34,6 +35,8 @@ document.getElementById("difficulty").addEventListener("change", function () {
   if (document.querySelector("#difficulty option:checked").value === "easy") {
     clearBoard();
     square = 11;
+    flagsPlaced = 18;
+    updateFlagCount();
     isFirstMove = true;
     startGame();
     board.className = "easy";
@@ -42,6 +45,8 @@ document.getElementById("difficulty").addEventListener("change", function () {
   if (document.querySelector("#difficulty option:checked").value === "normal") {
     clearBoard();
     square = 15;
+    flagsPlaced = 33;
+    updateFlagCount();
     isFirstMove = true;
     startGame();
     board.className = "normal";
@@ -50,6 +55,8 @@ document.getElementById("difficulty").addEventListener("change", function () {
   if (document.querySelector("#difficulty option:checked").value === "hard") {
     clearBoard();
     square = 19;
+    flagsPlaced = 54;
+    updateFlagCount();
     isFirstMove = true;
     startGame();
     board.className = "hard";
@@ -63,21 +70,29 @@ function clearBoard() {
     cell.remove();
   });
 }
-
 function resetBoard() {
   clearBoard();
   isFirstMove = true;
+  if (board.className === "easy") {
+    flagsPlaced = 18;
+    updateFlagCount();
+  }
+  if (board.className === "normal") {
+    flagsPlaced = 33;
+    updateFlagCount();
+  }
+  if (board.className === "hard") {
+    flagsPlaced = 54;
+    updateFlagCount();
+  }
   startGame();
   resetTimer();
 }
 
 function startGame() {
   const totalCells = square * square;
-  const bombPercentage = 0.15;
-  const bombsCount = Math.floor(totalCells * bombPercentage);
 
   createCells(totalCells);
-  setBomb(bombsCount, totalCells);
   eventHandler();
 }
 
@@ -89,27 +104,6 @@ function createCells(totalCells) {
     cell.classList.add("cell");
     board.appendChild(cell);
   }
-}
-
-function setBomb(bombsCount, totalCells) {
-  const bombIndices = [];
-
-  while (bombIndices.length < bombsCount) {
-    const index = Math.floor(Math.random() * totalCells);
-    if (!bombIndices.includes(index)) {
-      bombIndices.push(index);
-    }
-  }
-
-  const cells = document.querySelectorAll(".cell");
-
-  cells.forEach((cell, index) => {
-    if (bombIndices.includes(index)) {
-      cell.dataset.bomb = "true";
-    } else {
-      cell.dataset.bomb = "false";
-    }
-  });
 }
 
 //Thiết lập các sự kiện
@@ -135,11 +129,22 @@ function toggleFlag(event) {
   if (!cell.classList.contains("revealed")) {
     if (cell.classList.contains("flag")) {
       cell.textContent = ""; // Gỡ cờ nếu ô đã có cờ
+      flagsPlaced++;
+      cell.classList.toggle("flag");
     } else {
-      cell.textContent = "🚩";
+      if (flagsPlaced > 0) { // Chỉ đặt cờ nếu số cờ đã đặt còn lớn hơn 0
+        cell.textContent = "🚩";
+        flagsPlaced--; // Trừ 1 từ số cờ đã đặt
+        cell.classList.toggle("flag");
+      }
     }
-    cell.classList.toggle("flag");
+    updateFlagCount();
   }
+}
+
+function updateFlagCount() {
+  const flagCountElement = document.getElementById("flag-count");
+  flagCountElement.textContent = flagsPlaced; // Cập nhật số lượng cờ đã đặt trong giao diện người dùng
 }
 
 function highlightCell(event) {
@@ -200,7 +205,6 @@ function revealCell(event) {
   }
   if (cell.dataset.bomb === "true") {
     shakeScreen();
-    stopTimer();
     revealAllCells();
     setTimeout(function () {
       boxLose();
@@ -217,7 +221,6 @@ function revealCell(event) {
       );
     }
     if (checkWin()) {
-      stopTimer();
       revealAllCells();
       setTimeout(function () {
         boxWin();
@@ -245,19 +248,31 @@ function setFirstMove(firstCell) {
   const rowIndex = Math.floor(cellIndex / square);
   const colIndex = cellIndex % square;
 
-  // Đảm bảo ô đầu tiên và các ô lân cận không có bom
+  const totalCells = square * square;
+  const bombsCount = Math.floor(totalCells * 0.15); // 15% tổng số ô là bom
+
+  const bombIndices = [];
+  while (bombIndices.length < bombsCount) {
+    const index = Math.floor(Math.random() * totalCells);
+    if (!bombIndices.includes(index)) {
+      if (
+        index === cellIndex || // Ô đầu tiên không chứa bom
+        // 8 ô lân cận của ô đầu tiên không chứa bom
+        (Math.abs(Math.floor(index / square) - rowIndex) <= 1 &&
+          Math.abs((index % square) - colIndex) <= 1)
+      ) {
+        continue;
+      }
+      bombIndices.push(index);
+    }
+  }
+
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell, index) => {
-    const cellRowIndex = Math.floor(index / square);
-    const cellColIndex = index % square;
-
-    if (
-      cellRowIndex >= rowIndex - 1 &&
-      cellRowIndex <= rowIndex + 1 &&
-      cellColIndex >= colIndex - 1 &&
-      cellColIndex <= colIndex + 1
-    ) {
-      cell.dataset.bomb = "false"; // Đặt bom là 'false' cho ô và các ô lân cận
+    if (bombIndices.includes(index)) {
+      cell.dataset.bomb = "true"; // Đặt bom cho các ô được chọn ngẫu nhiên
+    } else {
+      cell.dataset.bomb = "false";
     }
   });
 }
@@ -273,6 +288,7 @@ function revealAllCells() {
     }
     cell.classList.add("revealed");
   });
+  stopTimer();
 }
 //ALert khi win game va lose game
 function boxWin() {
@@ -326,7 +342,7 @@ function shakeScreen() {
   // Thêm lớp "shake-animation" để kích hoạt animation
   shake.classList.add("shake-animation");
   // Sau 0.5 giây, loại bỏ lớp "shake-animation" để dừng animation
-  setTimeout(function() {
+  setTimeout(function () {
     shake.classList.remove("shake-animation");
   }, 500);
 }

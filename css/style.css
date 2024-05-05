@@ -54,7 +54,7 @@ body {
   align-items: center;
 }
 
-.countTime {
+.countTime, .flag {
   font-size: 1.2em;
   color: white;
 }
