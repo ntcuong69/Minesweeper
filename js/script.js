@@ -208,7 +208,7 @@ function revealCell(event) {
     return;
   if (isFirstMove) {
     clearFlags();
-    setFirstMove(cell);
+    setBomb(cell);
     isFirstMove = false;
     shakeScreen();
     startTimer();
@@ -251,7 +251,7 @@ function checkWin() {
   return true;
 }
 
-function setFirstMove(firstCell) {
+function setBomb(firstCell) {
   const cellIndex = Array.from(firstCell.parentNode.children).indexOf(
     firstCell
   );
